@@ -49,6 +49,7 @@ PImage bgO;
 int must_play;
 int mess = 0; //dodatna varijabla koja govori da li imamo poruku o greski
 int name = 1; // ako je 1, postavlja se prvi, ako je 2 postavlja se drugi, ako je 0 onda su svi postavljeni 
+int pravila = 0;
 //-------
 
 void setup(){
@@ -161,7 +162,31 @@ void draw(){
     fill(255);
   }
   } 
-  
+  else if(pravila == 0){
+    background(100);
+    fill(255);
+    textSize(40);
+    text("DOBRODOŠLI U IGRU!", width/3, height/4);
+    textSize(20);
+    text("Upišite prvo ime igrača i stisnite Enter, zatim ponovite postupak za ime drugog igrača.", width/5, height/3);
+    strokeWeight(2);
+    rect(width*3/7, height/2, 150, 50, 20);
+    fill(0);
+    textSize(30);
+    text("Pravila", width*3/7+30, height/2+30);
+    fill(255);
+    textSize(20);
+    text("Napomena: Imena neka imaju 10 znakova.", width/3,3* height/4);
+    strokeWeight (8);
+  }
+  else{
+    background(100);
+     textSize(20);
+     fill(255);
+     text("Cilj igre je: ...\n\n\n\n\n\n", 100, 100);
+     text("Za početak igre, upišite ime prvog igrača, pritisnite Enter i zatim opet upišite ime za drugog igrača i pritisnite Enter.", 100, 300);
+     text("Igra će krenuti ako su upisana oba imena, također, prikazat će se samo prvih 10 znakova. Sretno!", 100,500); 
+  }
 }
 
 void SetLegal(char [][] polje){
@@ -351,6 +376,14 @@ else if(Player=='o' && Mala[malastup][malared]==' ' && IsLegal(Mala)){
 else{
   mess = 1;
 }  
+ }
+ else{   //-----dodano(zato da se provjeri li se kliknulo na pravila igre)
+   int coX = mouseX;
+   int coY = mouseY;
+   if(coX > width*3/7 && coX <width*3/7+150 && coY > height/2 && coY < height/2+50){
+     pravila = 1;
+   }
+   
  }
 }
 
