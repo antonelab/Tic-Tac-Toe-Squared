@@ -36,8 +36,8 @@ char [][][][] Velika = {{A0,A1,A2},{B0,B1,B2},{C0,C1,C2}};
 char[][] VelikaRez = {{' ',' ',' '},
                     {' ',' ',' '},
                     {' ',' ',' '}};  
-char Player = 'x';
-char znak = ' ';
+char Player = 'x'; //koji je igrac trenutno na potezu 
+char znak = ' ';  //koji je pobjednicki znak
 boolean flag = false;
 
 //-------(dodano)
@@ -46,12 +46,26 @@ String player2_name = "";
 int move_count = 0;
 PImage bgX;
 PImage bgO;
+int must_play;
+int mess = 0; //dodatna varijabla koja govori da li imamo poruku o greski
+int e = 0; // jesu li dobro unijeta imena
 //-------
 
 void setup(){
 
   //-----(povecala na desno)
-  size(1000,640);  
+  size(1000,640); 
+  if(player1_name.length() == 0 || player1_name.length() > 10 || player2_name.length() == 0 || player2_name.length() > 10){
+    String[] player1 = loadStrings("firstPlayerName.txt");
+    player1_name = player1[0];
+    if(player1_name.length() == 0 || player1_name.length() > 10) e = 0;
+    else e = 1;
+    String[] player2 = loadStrings("secondPlayerName.txt");
+    player2_name = player2[0];
+    if(player2_name.length() == 0 || player2_name.length() > 10) e *= 0;
+    else e *= 1;
+    println(player1_name, player2_name);
+  }
   //-----(msm da nije potrebno ovdje)
   //stroke (50);
   strokeWeight (8);
@@ -62,6 +76,7 @@ void setup(){
 }
 
 void draw(){
+  if(e == 0) setup();
   background(100);
   textSize(280);
   textAlign(CENTER);
@@ -102,7 +117,7 @@ void draw(){
   //velika popuna
   textSize(280);
    for(int i=0; i<3; i++){
-    for(int j=0;j<3; j++){
+    for(int j=0; j<3; j++){
       text(VelikaRez[j][i],_width/3*i+_width/6,height/3*j+height/3-28);
     }}
   
@@ -123,10 +138,27 @@ void draw(){
       fill(0);
       text("Game Over\nPobijedio je igrač:\n"+player2_name, width/2, height/3);
     }
-    
   }
-
+  
+  //-----(dodano)
+  textSize(40);
+  fill(255);
+  if(Player=='x') fill(255,0,0);
+  text("X: "+player1_name, 800, height/3);
+  fill(255);
+  text("   vs   ",800, height/3+50);
+  if(Player=='o') fill(255,0,0);
+  text("O: "+player2_name, 800, height/3+100);
+  fill(255);
+  text("Broj poteza: "+move_count, 800, height-100);
+  if(mess == 1){
+    textSize(20);
+    fill(255,0,0);
+    text("Potez nije valjan, pokušajte ponovo.", 800, height-150); 
+    fill(255);
+  }
 }
+
 void SetLegal(char [][] polje){
   D = polje;
 }
@@ -285,6 +317,10 @@ break;
 if (Player=='x' && Mala[malastup][malared]==' ' && IsLegal(Mala)){
   Mala[malastup][malared]='x'; 
   Player = 'o'; 
+  //-----(dodano)
+  move_count++;
+  mess = 0;
+  
   ChechWinSmall(Mala, VelikaRez, malastup, malared, stup, red);
   if (CheckWinBig(stup, red)) GameOver(VelikaRez[stup][red]);
   if(VelikaRez[malastup][malared] == 'x' || VelikaRez[stup][red] == 'o') SetLegal(AllLegal);
@@ -294,10 +330,17 @@ if (Player=='x' && Mala[malastup][malared]==' ' && IsLegal(Mala)){
 else if(Player=='o' && Mala[malastup][malared]==' ' && IsLegal(Mala)){
   Mala[malastup][malared]='o';
   Player = 'x';
+  //-----(dodano)
+  move_count++;
+  mess = 0;
+  
   ChechWinSmall(Mala, VelikaRez, malastup, malared, stup, red);
   if (CheckWinBig(stup, red)) GameOver(VelikaRez[stup][red]);
   if(VelikaRez[malastup][malared] == 'x' || VelikaRez[stup][red] == 'o') SetLegal(AllLegal);
   else SetLegal(Velika[malastup][malared]); 
 
 }
+else{
+  mess = 1;
+}  
 }
