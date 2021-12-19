@@ -48,13 +48,14 @@ PImage bgX;
 PImage bgO;
 int must_play;
 int mess = 0; //dodatna varijabla koja govori da li imamo poruku o greski
-int e = 0; // jesu li dobro unijeta imena
+int name = 1; // ako je 1, postavlja se prvi, ako je 2 postavlja se drugi, ako je 0 onda su svi postavljeni 
 //-------
 
 void setup(){
 
   //-----(povecala na desno)
   size(1000,640); 
+  /*  ideja s unosom u datoteci
   if(player1_name.length() == 0 || player1_name.length() > 10 || player2_name.length() == 0 || player2_name.length() > 10){
     String[] player1 = loadStrings("firstPlayerName.txt");
     player1_name = player1[0];
@@ -66,6 +67,7 @@ void setup(){
     else e *= 1;
     println(player1_name, player2_name);
   }
+  */
   //-----(msm da nije potrebno ovdje)
   //stroke (50);
   strokeWeight (8);
@@ -76,7 +78,7 @@ void setup(){
 }
 
 void draw(){
-  if(e == 0) setup();
+  if( name == 0){
   background(100);
   textSize(280);
   textAlign(CENTER);
@@ -118,6 +120,7 @@ void draw(){
   textSize(280);
    for(int i=0; i<3; i++){
     for(int j=0; j<3; j++){
+      fill(255,0,0,90);
       text(VelikaRez[j][i],_width/3*i+_width/6,height/3*j+height/3-28);
     }}
   
@@ -157,6 +160,8 @@ void draw(){
     text("Potez nije valjan, pokušajte ponovo.", 800, height-150); 
     fill(255);
   }
+  } 
+  
 }
 
 void SetLegal(char [][] polje){
@@ -198,6 +203,8 @@ void mousePressed(){
  //-----(dodana nova varijabla umjesto koristene width)
  int _width = width - 360;
   
+ //-----dodano(zbog toga sto se nista ne dogada dok imena nisu unesena)
+ if(name == 0){
  int coX = mouseX;
  int coY = mouseY;
  int red = 0;
@@ -310,6 +317,7 @@ if(coX>2*height/3 && coX<7*height/9){malared = 0;}
 else if(coX>7*height/9 && coX<8*height/9){malared = 1;}
 else if(coX>8*height/9 && coX<9*height/9){malared=2;}
 break;
+
 }
 
 
@@ -343,4 +351,20 @@ else if(Player=='o' && Mala[malastup][malared]==' ' && IsLegal(Mala)){
 else{
   mess = 1;
 }  
+ }
 }
+
+
+//-----dodano(unos dok se ne stisne ENTER)
+void keyPressed() {
+  if (key != CODED) {
+    if(key != ENTER && key != BACKSPACE && key != TAB && key != RETURN && key != ESC && key != DELETE){
+       if(name == 1 && player1_name.length() < 10) player1_name += key;
+       else if(name == 2 && player2_name.length() < 10) player2_name += key;
+    }
+    if(key == ENTER){
+      if(name == 1 && player1_name != "") name = 2;
+      else if(name == 2 && player2_name != "") name = 0; 
+    } 
+  }
+} 
