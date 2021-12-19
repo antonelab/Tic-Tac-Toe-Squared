@@ -53,6 +53,8 @@ int pravila = 0; //ako je 1 onda se mora prikazat zaslon s pravilima
 int legal_red = 3; //0->1,1->2,2->3, 3->bilo koji
 int legal_stup = 3; //0->1,1->2,2->3, 3->bilo koji
 //u paru ovo dvoje sluzi da se oznaci polje na koje igrac mora igrat
+int vrijeme = 0;
+int start_time = 0;
 //-------
 
 void setup(){
@@ -167,6 +169,9 @@ void draw(){
     text("Potez nije valjan, pokušajte ponovo.", 800, height-150); 
     fill(255);
   }
+  //-----dodano(sat)
+  textSize(20);
+  text("Vrijeme potrošeno na prijašnji potez: " + str(vrijeme/1000)+ " s", 810, height-50);
   } 
   else if(pravila == 0){
     background(100);
@@ -361,6 +366,8 @@ if (Player=='x' && Mala[malastup][malared]==' ' && IsLegal(Mala)){
   //-----(dodano)
   move_count++;
   mess = 0;
+  vrijeme = millis()-start_time;
+  start_time = millis();
   
   ChechWinSmall(Mala, VelikaRez, malastup, malared, stup, red);
   if (CheckWinBig(stup, red)) GameOver(VelikaRez[stup][red]);
@@ -374,6 +381,8 @@ else if(Player=='o' && Mala[malastup][malared]==' ' && IsLegal(Mala)){
   //-----(dodano)
   move_count++;
   mess = 0;
+  vrijeme = millis()-start_time;
+  start_time = millis();
   
   ChechWinSmall(Mala, VelikaRez, malastup, malared, stup, red);
   if (CheckWinBig(stup, red)) GameOver(VelikaRez[stup][red]);
@@ -405,7 +414,11 @@ void keyPressed() {
     }
     if(key == ENTER){
       if(name == 1 && player1_name != "") name = 2;
-      else if(name == 2 && player2_name != "") name = 0; 
+      else if(name == 2 && player2_name != "") {
+        name = 0;
+        start_time =  millis();
+      }
+      
     } 
   }
 } 
