@@ -49,7 +49,10 @@ PImage bgO;
 int must_play;
 int mess = 0; //dodatna varijabla koja govori da li imamo poruku o greski
 int name = 1; // ako je 1, postavlja se prvi, ako je 2 postavlja se drugi, ako je 0 onda su svi postavljeni 
-int pravila = 0;
+int pravila = 0; //ako je 1 onda se mora prikazat zaslon s pravilima
+int legal_red = 3; //0->1,1->2,2->3, 3->bilo koji
+int legal_stup = 3; //0->1,1->2,2->3, 3->bilo koji
+//u paru ovo dvoje sluzi da se oznaci polje na koje igrac mora igrat
 //-------
 
 void setup(){
@@ -72,7 +75,7 @@ void setup(){
   //-----(msm da nije potrebno ovdje)
   //stroke (50);
   strokeWeight (8);
-  SetLegal(AllLegal);
+  SetLegal(AllLegal, 3, 3);
   //-----(dodano)
   bgX = loadImage("xx.jpg");
   bgO = loadImage("oo.jpg");
@@ -102,10 +105,13 @@ void draw(){
   int h = height/3;
   for (int i =0; i<3;i++){
      for (int j =0; j<3; j++){
+       if(legal_red == i && legal_stup == j) stroke(205, 92,92);
        line(w/3+w*i,0+h*j+20,w/3+w*i,h+h*j-20);
        line(2*w/3+w*i,0+20+h*j,2*w/3+w*i,h+h*j-20);
        line(0+w*i+20,h/3+h*j,w+w*i-20,h/3+h*j);
-       line(0+w*i+20,2*h/3+h*j,w+w*i-20,2*h/3+h*j);}}
+       line(0+w*i+20,2*h/3+h*j,w+w*i-20,2*h/3+h*j);
+       stroke(50);  
+   }}
  
  //male popuna
  textSize(30);
@@ -121,7 +127,7 @@ void draw(){
   textSize(280);
    for(int i=0; i<3; i++){
     for(int j=0; j<3; j++){
-      fill(255,0,0,90);
+      fill(0, 255, 0, 90);
       text(VelikaRez[j][i],_width/3*i+_width/6,height/3*j+height/3-28);
     }}
   
@@ -147,17 +153,17 @@ void draw(){
   //-----(dodano)
   textSize(40);
   fill(255);
-  if(Player=='x') fill(255,0,0);
+  if(Player=='x') fill(227, 75, 75);
   text("X: "+player1_name, 800, height/3);
   fill(255);
   text("   vs   ",800, height/3+50);
-  if(Player=='o') fill(255,0,0);
+  if(Player=='o') fill(227, 75, 75);
   text("O: "+player2_name, 800, height/3+100);
   fill(255);
   text("Broj poteza: "+move_count, 800, height-100);
   if(mess == 1){
     textSize(20);
-    fill(255,0,0);
+     fill(227, 75, 75);
     text("Potez nije valjan, pokušajte ponovo.", 800, height-150); 
     fill(255);
   }
@@ -189,8 +195,10 @@ void draw(){
   }
 }
 
-void SetLegal(char [][] polje){
+void SetLegal(char [][] polje, int red, int stupac){
   D = polje;
+  legal_red = red;
+  legal_stup = stupac;
 }
 
 boolean IsLegal(char [][] polje){
@@ -356,8 +364,8 @@ if (Player=='x' && Mala[malastup][malared]==' ' && IsLegal(Mala)){
   
   ChechWinSmall(Mala, VelikaRez, malastup, malared, stup, red);
   if (CheckWinBig(stup, red)) GameOver(VelikaRez[stup][red]);
-  if(VelikaRez[malastup][malared] == 'x' || VelikaRez[stup][red] == 'o') SetLegal(AllLegal);
-  else SetLegal(Velika[malastup][malared]); 
+  if(VelikaRez[malastup][malared] == 'x' || VelikaRez[stup][red] == 'o') SetLegal(AllLegal, 3, 3);
+  else SetLegal(Velika[malastup][malared], malared, malastup); 
 }
 
 else if(Player=='o' && Mala[malastup][malared]==' ' && IsLegal(Mala)){
@@ -369,8 +377,8 @@ else if(Player=='o' && Mala[malastup][malared]==' ' && IsLegal(Mala)){
   
   ChechWinSmall(Mala, VelikaRez, malastup, malared, stup, red);
   if (CheckWinBig(stup, red)) GameOver(VelikaRez[stup][red]);
-  if(VelikaRez[malastup][malared] == 'x' || VelikaRez[stup][red] == 'o') SetLegal(AllLegal);
-  else SetLegal(Velika[malastup][malared]); 
+  if(VelikaRez[malastup][malared] == 'x' || VelikaRez[stup][red] == 'o') SetLegal(AllLegal, 3, 3);
+  else SetLegal(Velika[malastup][malared], malared, malastup); 
 
 }
 else{
