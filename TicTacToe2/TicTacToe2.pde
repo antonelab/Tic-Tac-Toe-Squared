@@ -1,5 +1,9 @@
+import processing.sound.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+
+
+
 
 char[][] A0 = {{' ',' ',' '},
                {' ',' ',' '},
@@ -49,8 +53,12 @@ char label = ' ';  //koji je pobjednicki label
 String player1_name = "";
 String player2_name = "";
 int move_count = 0;
-PImage bgX;
-PImage bgO;
+PImage bgXgreen;
+PImage bgOpink;
+PImage bgXblue;
+PImage bgOred;
+PImage bgXmagenta;
+PImage bgOyellow;
 int must_play;
 int mess = 0; //dodatna varijabla koja govori da li imamo poruku o greski
 int name = 1; // ako je 1, postavlja se prvi, ako je 2 postavlja se drugi, ako je 0 onda su svi postavljeni 
@@ -64,6 +72,12 @@ String table = ""; //prazno za proizvoljno polje, inače olabela polja kao što 
 PFont font;
 int stat = 0;
 String[] winners = {};
+//dodane varijable za boje
+color label_color = color(134, 194, 116);
+color name_color = color(199, 78, 92);
+String bg_theme = "rg"; //red-green combination
+int rule_over = 0;
+SoundFile music;
 //-------
 
 void setup(){
@@ -89,8 +103,14 @@ void setup(){
   SetLegal(3, 3);
   //-----(dodano)
   font = createFont("FFF_Tusj.ttf",50);
-  bgX = loadImage("x.jpg");
-  bgO = loadImage("o.jpg");
+  bgXgreen = loadImage("x-green.jpg");
+  bgOred = loadImage("o-red.jpg");
+  bgXblue = loadImage("x-blue.jpg");
+  bgOpink= loadImage("o-pink.jpg");
+  bgXmagenta = loadImage("x-magenta.jpg");
+  bgOyellow = loadImage("o-yellow.jpg");
+  music = new SoundFile(this, "Hozier - NFWMB.mp3");
+  music.loop();
 }
 
 void draw(){
@@ -117,7 +137,9 @@ void draw(){
     int h = height/3;
     for (int i =0; i<3;i++){
        for (int j =0; j<3; j++){
-         if(legal_red == i && legal_stup == j) stroke(205, 92,92); //oznacavanje must polja
+         if(legal_red == i && legal_stup == j){
+           stroke(label_color);
+         }
            line(w/3+w*i,0+h*j+20,w/3+w*i,h+h*j-20);
            line(2*w/3+w*i,0+20+h*j,2*w/3+w*i,h+h*j-20);
            line(0+w*i+20,h/3+h*j,w+w*i-20,h/3+h*j);
@@ -138,18 +160,18 @@ void draw(){
   textSize(280);
   for(int i=0; i<3; i++){
     for(int j=0; j<3; j++){
-      fill(0, 255, 0, 90);
+      fill(name_color, 90);
       text(BigTableResults[j][i],_width/3*i+_width/6,height/3*j+height/3-28);
     }}
   
   //-----(dodano)
   textSize(40);
   fill(255);
-  if(player=='x') fill(227, 75, 75);
+  if(player=='x') fill(name_color);
   text("X: "+player1_name, 800, height/3);
   fill(255);
   text("   vs   ",800, height/3+50);
-  if(player=='o') fill(227, 75, 75);
+  if(player=='o') fill(name_color);
   text("O: "+player2_name, 800, height/3+100);
   fill(255);
   text("Broj poteza: "+move_count, 800, height-100);
@@ -164,13 +186,17 @@ void draw(){
     
     //-----(dodat pozadinu u ovisnosti o tome tko je pojedio(x/o.jpg))
     if(label == 'x'){
-      background(bgX);
+      if(bg_theme == "rg") background(bgXgreen);
+      else if(bg_theme == "ym") background(bgXmagenta);
+      else if(bg_theme == "pb") background(bgXblue);
       fill(0);
       text("Game Over\nPobijedio je player:\n"+player1_name, width/2, height/3);
       text("u "+move_count+" poteza", width/2, height/3+200);
     }
     else{
-      background(bgO);
+      if(bg_theme == "rg") background(bgOred);
+      else if(bg_theme == "ym") background(bgOyellow);
+      else if(bg_theme == "pb") background(bgOpink);
       fill(0);
       text("Game Over\nPobijedio je player:\n"+player2_name, width/2, height/3);
       text("u "+move_count+" poteza", width/2, height/3+200);
@@ -178,7 +204,7 @@ void draw(){
   }
   else if(mess == 1){
     textSize(20);
-     fill(227, 75, 75);
+    fill(label_color);
     text("Potez nije valjan, pokušajte ponovo.", 800, height-150); 
     fill(255);
   }
@@ -195,6 +221,8 @@ void draw(){
     textAlign(CENTER);
     text("Upišite ime za X playera i stisnite Enter, zatim ponovite postupak za ime O playera.", width/2, height/3);
     strokeWeight(2);
+    //sjencanje gumba
+    if(overRule(width*3/7, height/2, 150, 50)) fill(168, 168, 168);
     rect(width*3/7, height/2, 150, 50, 20);
     fill(0);
     textSize(30);
@@ -204,6 +232,7 @@ void draw(){
     textSize(15);
     textAlign(LEFT);
     text("Napomena: Imena neka imaju 10 znakova,  višak znakova se ignorira. ", 50, 4* height/5);
+    text("Napomena: Tipkama $, %, & mjenjaju se teme u igri. ", 50, 4* height/5+50);
     strokeWeight (8);
   }
   else if (info ==1){
@@ -216,7 +245,7 @@ void draw(){
      text("Potez treba odigrati u onom polju na velikoj tabli gdje je u prošlom potezu stavljen znak. \n       Obavezno polje za potez je obojano crvenkastom bojom, \n                 kada niti jedno polje nije obojano, svaki je potez dozvoljen. ", 50, 190);
      text("Pobjedom na polju, na velikoj tabli upisuje se veliki znak playera koji je pobjedio na tom polju. \n     Igra je gotova kada se pobjedi znakovima na velikoj tabli (veliki znakovi). ", 50, 290);
      textAlign(CENTER);
-     fill(0,255,0);
+     fill(label_color);
      text("Za pokretanje igre, upišite ime prvog playera, pritisnite Enter \n      i zatim opet upišite ime za drugog playera i pritisnite Enter.", 500, 450);
      text("Kada su oba imena upisana, igra starta. \n      Pripazite da imena imaju do 10 znakova, ostali se znakovi zanemaruju. Sretno!", 500, 550); 
      fill(255);
@@ -229,7 +258,9 @@ void draw(){
     if(stat == 3 && name == 0){
       text(winners[0], width/2, 100);
       textSize(30);
+      fill(name_color);
       text(winners[1], width/2, 160);
+      fill(label_color);
       text(winners[2], width/2, 200);
     }
     else if(stat == 3 && name != 0){
@@ -240,6 +271,7 @@ void draw(){
       if(stat == 1) text("Najbolji X playeri:", width/2, 100);
       if(stat == 2) text("Najbolji O playeri:", width/2, 100);
       textSize(30);
+      fill(label_color);
       for(int i = 0; i < winners.length && i < 10; i++){
         text(str(i+1)+ ".  " + winners[i], width/2, 160 + i*50);
       }
@@ -458,18 +490,33 @@ void mousePressed(){
 //-----dodano(unos dok se ne stisne ENTER)
 void keyPressed() {
   if (key != CODED) {
-    if(key != ENTER && key != BACKSPACE && key != TAB && key != RETURN && key != ESC && key != DELETE){
+    if(key != ENTER && key != BACKSPACE && key != TAB && key != RETURN && key != ESC && key != DELETE && key != '$' && key != '%' && key != '&'){
        if(name == 1 && player1_name.length() < 10) player1_name += key;
        else if(name == 2 && player2_name.length() < 10) player2_name += key;
     }
-    if(key == ENTER){
+    else if(key == ENTER){
       if(name == 1 && player1_name != "") name = 2;
       else if(name == 2 && player2_name != "") {
         name = 0;
         start_time =  millis();
       }
     } 
-    if(key == TAB ) stat = 0;
+    else if(key == TAB ) stat = 0;
+    else if(key == '$'){
+      label_color =  color(134, 194, 116);
+      name_color =  color(199, 78, 92);
+      bg_theme = "rg";
+    }
+    else if(key == '%'){
+      label_color = color(224, 219, 146);
+      name_color = color(168, 112, 224);
+      bg_theme = "ym";
+    }
+    else if(key == '&'){
+      label_color = color(230, 172, 229);
+      name_color = color(59, 182, 219);
+      bg_theme = "pb";
+    }
   }
   else if(keyCode == UP) { //gledamo samo x koji su pobjedili
     String[] lines = loadStrings("results.txt");
@@ -527,3 +574,12 @@ void keyPressed() {
     stat = 3;
   }
 } 
+
+boolean overRule(int x, int y, int width, int height)  {
+  if (mouseX >= x && mouseX <= x+width && 
+      mouseY >= y && mouseY <= y+height) {
+    return true;
+  } else {
+    return false;
+  }
+}
