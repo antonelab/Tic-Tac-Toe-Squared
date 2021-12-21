@@ -6,3 +6,15 @@ v,r,o,38
 d,r,x,27
 w,e,x,17
 w,e,x,19
+e,w,x,29
+f,d,x,19
+s,d,x,27
+d,s,x,17
+s,d,x,17
+aw,e,x,19
+ae,w,x,29
+af,d,x,19
+as,d,x,27
+ad,s,x,17
+s,d,x,17
+aa,aaaa,o,20

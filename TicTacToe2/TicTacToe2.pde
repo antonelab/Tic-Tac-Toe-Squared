@@ -62,6 +62,8 @@ int time = 0;
 int start_time = 0;
 String table = ""; //prazno za proizvoljno polje, inače olabela polja kao što je kolega označio 
 PFont font;
+int stat = 0;
+String[] winners = {};
 //-------
 
 void setup(){
@@ -204,7 +206,7 @@ void draw(){
     text("Napomena: Imena neka imaju 10 znakova,  višak znakova se ignorira. ", 50, 4* height/5);
     strokeWeight (8);
   }
-  else{
+  else if (info ==1){
     background(100);
      textSize(20);
      fill(255);
@@ -218,6 +220,30 @@ void draw(){
      text("Za pokretanje igre, upišite ime prvog playera, pritisnite Enter \n      i zatim opet upišite ime za drugog playera i pritisnite Enter.", 500, 450);
      text("Kada su oba imena upisana, igra starta. \n      Pripazite da imena imaju do 10 znakova, ostali se znakovi zanemaruju. Sretno!", 500, 550); 
      fill(255);
+  }
+  if(stat > 0){
+    background(100);
+    fill(255);
+    textSize(50);
+    textAlign(CENTER);
+    if(stat == 3 && name == 0){
+      text(winners[0], width/2, 100);
+      textSize(30);
+      text(winners[1], width/2, 160);
+      text(winners[2], width/2, 200);
+    }
+    else if(stat == 3 && name != 0){
+      textSize(20);
+      text("Upišite ime playera pa pokušajte ponovo vidjeti statistiku! ", width/2, 100);
+    }
+    else{
+      if(stat == 1) text("Najbolji X playeri:", width/2, 100);
+      if(stat == 2) text("Najbolji O playeri:", width/2, 100);
+      textSize(30);
+      for(int i = 0; i < winners.length && i < 10; i++){
+        text(str(i+1)+ ".  " + winners[i], width/2, 160 + i*50);
+      }
+    }
   }
 }
 
@@ -268,6 +294,7 @@ void GameOver(char labelic){
 
 
 void mousePressed(){
+  if(label != ' ') return;
  //-----(dodana nova varijabla umjesto koristene width)
  int _width = width - 360;
   
@@ -441,7 +468,62 @@ void keyPressed() {
         name = 0;
         start_time =  millis();
       }
-      
     } 
+    if(key == TAB ) stat = 0;
+  }
+  else if(keyCode == UP) { //gledamo samo x koji su pobjedili
+    String[] lines = loadStrings("results.txt");
+    String[] line;
+    IntDict results = new IntDict();
+    for (int i = 0 ; i < lines.length; i++) {
+      line = split(lines[i],',');
+      if(line[2].equals( "x" ) && results.hasKey(line[0])) results.increment(line[0]);
+      else if(line[2].equals( "x" ) && !results.hasKey(line[0])) results.set(line[0], 1);
+    }
+    results.sortValuesReverse();
+    winners = new String[]{};
+    for(String s : results.keys()){
+       winners = append(winners,  s + "  ->  "+ str(results.get(s)));
+    }   
+    stat = 1;
+  }
+  else if(keyCode == DOWN) { //gledamo samo o koji su pobjedili
+    String[] lines = loadStrings("results.txt");
+    String[] line;
+    IntDict results = new IntDict();
+    for (int i = 0 ; i < lines.length; i++) {
+      line = split(lines[i],',');
+      if(line[2].equals( "o" ) && results.hasKey(line[1])) results.increment(line[1]);
+      else if(line[2].equals( "o" ) && !results.hasKey(line[1])) results.set(line[1], 1);
+    }
+    results.sortValuesReverse();
+    winners = new String[]{};
+    for(String s : results.keys()){
+       winners =append(winners,  s + "  ->  "+ str(results.get(s)));
+    }   
+    stat = 2;
+  }
+  else if(keyCode == LEFT || keyCode == RIGHT) { //gledamo samo o koji su pobjedili
+    String[] lines = loadStrings("results.txt");
+    String[] line;
+    int x_win = 0;
+    int o_win = 0;
+    for (int i = 0 ; i < lines.length; i++) {
+      line = split(lines[i],',');
+      if(keyCode == LEFT){
+        if(line[2].equals("x") && line[0].equals(player1_name)) x_win++;
+        if(line[2].equals("o") && line[1].equals(player1_name)) o_win++;
+      }
+      if(keyCode == RIGHT){
+        if(line[2].equals("x") && line[0].equals(player2_name)) x_win++;
+        if(line[2].equals("o") && line[1].equals(player2_name)) o_win++;
+      }
+    }
+    winners = new String[]{};
+    if(keyCode == LEFT) winners = append(winners, "Statistika playera "+ player1_name);
+    if(keyCode == RIGHT) winners = append(winners, "Statistika playera "+ player2_name);
+    winners = append(winners, "Pobjede kao X player:  " + str(x_win));
+    winners = append(winners, "Pobjede kao O player:  " + str(o_win));
+    stat = 3;
   }
 } 
