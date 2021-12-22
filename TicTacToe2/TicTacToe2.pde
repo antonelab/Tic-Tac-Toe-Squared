@@ -1,6 +1,7 @@
-import processing.sound.*;
+import ddf.minim.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.util.Random;
 
 
 
@@ -77,7 +78,10 @@ color label_color = color(134, 194, 116);
 color name_color = color(199, 78, 92);
 String bg_theme = "rg"; //red-green combination
 int rule_over = 0;
-SoundFile music;
+int song;
+String[] songs = {"Hozier - NFWMB.mp3"};
+Minim minim;
+AudioPlayer audio;
 //-------
 
 void setup(){
@@ -109,8 +113,11 @@ void setup(){
   bgOpink= loadImage("o-pink.jpg");
   bgXmagenta = loadImage("x-magenta.jpg");
   bgOyellow = loadImage("o-yellow.jpg");
-  music = new SoundFile(this, "Hozier - NFWMB.mp3");
-  music.loop();
+  Random random = new Random();
+  song = random.nextInt(songs.length); 
+  minim = new Minim(this);
+  audio = minim.loadFile(songs[song]);
+  audio.play();
 }
 
 void draw(){
@@ -516,6 +523,24 @@ void mousePressed(){
 
 //-----dodano(unos dok se ne stisne ENTER)
 void keyPressed() {
+  //Dodano za pjesme
+  //Kada pjesma dode do kraja pusti sljedecu
+  if ( audio.position() == audio.length() ) {
+    song++;
+    song %= songs.length;
+    audio = minim.loadFile(songs[song]);
+  }
+  //Sa razmakom zaustavljamo i pustamo pjesmu
+  else if(key == ' '){
+    if ( audio.isPlaying() ) {
+      println("Da");
+      audio.pause();
+    }
+    
+    else {
+      audio.play();
+    }
+  }
   if (key != CODED) {
     if(key != ENTER && key != BACKSPACE && key != TAB && key != RETURN && key != ESC && key != DELETE && key != '$' && key != '%' && key != '&'){
        if(name == 1 && player1_name.length() < 10) player1_name += key;
@@ -544,6 +569,7 @@ void keyPressed() {
       name_color = color(59, 182, 219);
       bg_theme = "pb";
     }
+    
   }
   else if(keyCode == UP) { //gledamo samo x koji su pobjedili
     String[] lines = loadStrings("results.txt");
