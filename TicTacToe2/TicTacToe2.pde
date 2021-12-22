@@ -82,6 +82,7 @@ int song;
 String[] songs = {"Hozier - NFWMB.mp3"};
 Minim minim;
 AudioPlayer audio;
+int help =0;
 //-------
 
 void setup(){
@@ -239,7 +240,7 @@ void draw(){
     textSize(15);
     textAlign(LEFT);
     text("Napomena: Imena neka imaju 10 znakova,  višak znakova se ignorira. ", 50, 4* height/5);
-    text("Napomena: Tipkama $, %, & mjenjaju se teme u igri. ", 50, 4* height/5+50);
+    text("Napomena: Tipkom ? poziva se help. ", 50, 4* height/5+50);
     strokeWeight (8);
   }
   else if (info ==1){
@@ -283,6 +284,73 @@ void draw(){
         text(str(i+1)+ ".  " + winners[i], width/2, 160 + i*50);
       }
     }
+  }
+  else if(help == 1){
+    background(100);
+    fill(255);
+    textSize(40);
+    textAlign(CENTER);
+    text("HELP", width/2, 50);
+    fill(name_color);
+    textSize(30);
+    textAlign(LEFT);
+    text("?  :   ",50, 100);
+    fill(255);
+    textSize(30);
+    textAlign(LEFT);
+    text(" izlaz/ulaz iz help-a  ",100, 100);
+    fill(name_color);
+    textSize(30);
+    textAlign(LEFT);
+    text("strelica gore/dolje  :  ",50,150);
+    fill(255);
+    textSize(30);
+    textAlign(LEFT);
+    text(" najboljih 10 X/O playera ",350, 150);
+    fill(name_color);
+    textSize(30);
+    textAlign(LEFT);
+    text("strelica lijevo/desno  : ",50, 200);
+    fill(255);
+    textSize(30);
+    textAlign(LEFT);
+    text("statistika X/O playera ",400, 200);
+    fill(name_color);
+    textSize(30);
+    textAlign(LEFT);
+    text("razmaknica(space) :",50, 250);
+    fill(255);
+    textSize(30);
+    textAlign(LEFT);
+    text("pauza/start glazbe ",390, 250);
+    fill(name_color);
+    textSize(30);
+    textAlign(LEFT);
+    text("Tab :",50, 300);
+    fill(255);
+    textSize(30);
+    textAlign(LEFT);
+    text("izlazak iz statistike ",150, 300);
+    fill(255);
+    textAlign(CENTER);
+    text("Promjena tema u igri s tri tipke:", width/2, 400);
+    text("$",200, 470);
+    text("%",width/2, 470);
+    text("&", width-200, 470);
+    strokeWeight (0);
+    fill(199, 78, 92);
+    circle(200, 520, 40);
+    fill(134, 194, 116);
+    circle(200, 570, 40);
+    fill(224, 219, 146);
+    circle(width/2, 520, 40);
+    fill(168, 112, 224);
+    circle(width/2, 570, 40);
+    fill(230, 172, 229);
+    circle(width-200, 520, 40);
+    fill(59, 182, 219);
+    circle(width-200, 570, 40);
+    strokeWeight (8);
   }
 }
 
@@ -533,7 +601,6 @@ void keyPressed() {
   //Sa razmakom zaustavljamo i pustamo pjesmu
   else if(key == ' '){
     if ( audio.isPlaying() ) {
-      println("Da");
       audio.pause();
     }
     
@@ -542,7 +609,7 @@ void keyPressed() {
     }
   }
   if (key != CODED) {
-    if(key != ENTER && key != BACKSPACE && key != TAB && key != RETURN && key != ESC && key != DELETE && key != '$' && key != '%' && key != '&'){
+    if(key != ENTER && key != BACKSPACE && key != TAB && key != RETURN && key != ESC && key != DELETE && key != '$' && key != '%' && key != '&' && key != '?'){
        if(name == 1 && player1_name.length() < 10) player1_name += key;
        else if(name == 2 && player2_name.length() < 10) player2_name += key;
     }
@@ -569,6 +636,11 @@ void keyPressed() {
       name_color = color(59, 182, 219);
       bg_theme = "pb";
     }
+    else if(key == '?'){
+      if(help == 1) help =0;
+      else help = 1;
+    }
+    
     
   }
   else if(keyCode == UP) { //gledamo samo x koji su pobjedili
