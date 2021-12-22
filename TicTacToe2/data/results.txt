@@ -18,3 +18,5 @@ as,d,x,27
 ad,s,x,17
 s,d,x,17
 aa,aaaa,o,20
+Ivan,Sanja,x,35
+Ivan,Sanja,o,44

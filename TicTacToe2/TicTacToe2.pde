@@ -309,6 +309,31 @@ boolean CheckWinBig(int i, int j){
   return false;
 }
 
+boolean CheckSmallFull(int col, int row){
+  char[][] Small;
+  if(col == 0){
+    if(row == 0)Small = A0;
+    else if(row == 1)Small = A1;
+    else Small = A2;
+  }
+  else if(col == 1){
+    if(row == 0)Small = B0;
+    else if(row == 1)Small = B1;
+    else Small = B2;
+  }
+  else{
+    if(row == 0)Small = C0;
+    else if(row == 1)Small = C1;
+    else Small = C2;
+  }
+  for(int i = 0; i < 3; i++){
+    for(int j = 0; j < 3; j++){
+      if(Small[i][j] == ' ')return false;
+    }
+  }
+  return true;
+}
+
 void GameOver(char labelic){
   label = labelic;
   //----maknuto(msm da je visak)
@@ -456,6 +481,7 @@ void mousePressed(){
     CheckWinSmall(Mala, BigTableResults, malastup, malared, stup, red);
     if (CheckWinBig(stup, red)) GameOver(BigTableResults[stup][red]);
     if(BigTableResults[malastup][malared] == 'x' || BigTableResults[stup][red] == 'o') SetLegal( 3, 3);
+    else if(CheckSmallFull(malastup, malared)) SetLegal(3, 3);
     else SetLegal(malared, malastup); 
   }
 
@@ -471,6 +497,7 @@ void mousePressed(){
     CheckWinSmall(Mala, BigTableResults, malastup, malared, stup, red);
     if (CheckWinBig(stup, red)) GameOver(BigTableResults[stup][red]);
     if(BigTableResults[malastup][malared] == 'x' || BigTableResults[stup][red] == 'o') SetLegal(3, 3);
+    else if(CheckSmallFull(malastup, malared)) SetLegal(3, 3);
     else SetLegal(malared, malastup); 
   }
   else{
