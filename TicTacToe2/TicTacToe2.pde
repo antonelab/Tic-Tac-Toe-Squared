@@ -480,7 +480,7 @@ void mousePressed(){
   
     CheckWinSmall(Mala, BigTableResults, malastup, malared, stup, red);
     if (CheckWinBig(stup, red)) GameOver(BigTableResults[stup][red]);
-    if(BigTableResults[malastup][malared] == 'x' || BigTableResults[stup][red] == 'o') SetLegal( 3, 3);
+    if(BigTableResults[malastup][malared] == 'x' || BigTableResults[malastup][malared] == 'o') SetLegal(3, 3);
     else if(CheckSmallFull(malastup, malared)) SetLegal(3, 3);
     else SetLegal(malared, malastup); 
   }
@@ -496,7 +496,7 @@ void mousePressed(){
   
     CheckWinSmall(Mala, BigTableResults, malastup, malared, stup, red);
     if (CheckWinBig(stup, red)) GameOver(BigTableResults[stup][red]);
-    if(BigTableResults[malastup][malared] == 'x' || BigTableResults[stup][red] == 'o') SetLegal(3, 3);
+    if(BigTableResults[malastup][malared] == 'x' || BigTableResults[malastup][malared] == 'x') SetLegal(3, 3);
     else if(CheckSmallFull(malastup, malared)) SetLegal(3, 3);
     else SetLegal(malared, malastup); 
   }

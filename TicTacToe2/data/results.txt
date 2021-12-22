@@ -20,3 +20,4 @@ s,d,x,17
 aa,aaaa,o,20
 Ivan,Sanja,x,35
 Ivan,Sanja,o,44
+Ivan,Sanja,x,31
